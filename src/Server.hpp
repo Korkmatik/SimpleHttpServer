@@ -13,7 +13,6 @@ namespace std {
 class Server {
     
 public:
-    Server();
     Server(int port);
     virtual ~Server();
 
