@@ -6,18 +6,20 @@
 
 #include "ServerError.hpp"
 
-Server::Server()
+Server::Server(int port)
 {
 	auto addressFamily = AF_INET;
 	auto serviceType = SOCK_STREAM;
 	
-	port = 8080;
+	this->port = port;
 
     socket_fd = socket(addressFamily, serviceType, 0);
     if (socket_fd == -1) {
 		auto error = ServerCreateSocketError();
         throwError(error);
     }
+
+	printf("Created socket (FD #%d)\n", socket_fd);
 
 	sock_addr = new sockaddr_in;
 	memset((char*) sock_addr, 0, sizeof(*sock_addr));
@@ -31,6 +33,8 @@ Server::Server()
 		auto error = ServerBindError();
 		throwError(error);
 	}
+
+	printf("Socket was bind on port: %d\n", this->port);
 }
 
 Server::~Server()
@@ -45,6 +49,8 @@ void Server::run(int maxConnections)
 		throwError(error);
 	}
 
+	printf("Server is listening\n");
+
 	int incoming_connection_fd;
 	sockaddr_in* incoming_sockaddress = new sockaddr_in;
 	int addr_len = sizeof(*incoming_sockaddress);
@@ -52,6 +58,8 @@ void Server::run(int maxConnections)
 		auto error = ServerAcceptError();
 		throwError(error);
 	}
+
+	printf("Accepted connection from client\n");
 
 	sendData(incoming_connection_fd, incoming_sockaddress);
 }
@@ -78,7 +86,7 @@ void Server::sendData(const int& to_fd, const sockaddr_in* to_addr) const
 	printf("%s\n", buffer);
 	
 	if (valread < 0) {
-		printf("No bytes are there to read");
+		printf("No bytes are there to read\n");
 		return;
 	}
 
