@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <iostream>
 #include <exception>
 
 #include "Server.hpp"
@@ -7,10 +7,13 @@ int main(int argc, char* argv[])
 {
 
 	try {
-		Server* httpServer = new Server(8080);
-		httpServer->run(10);
+		Server* httpServer = new Server(9002, 10);
+		
+		while(true) {
+			httpServer->run();
+		}
 	} catch (std::exception& e) {
-		printf("Error: %s\n", e.what());
+		std::cout << e.what() << "\n";
 	}
 
 	return 0;
