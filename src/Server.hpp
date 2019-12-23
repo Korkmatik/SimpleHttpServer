@@ -13,17 +13,16 @@ namespace std {
 class Server {
     
 public:
-    Server(int port);
+    Server(int port, int maxConnections);
     virtual ~Server();
 
-	void run(int maxConnections);
+	void run();
 private:
     int socket_fd;
     struct sockaddr_in* sock_addr;
 	int port;
 
     void cleanUp();
-	void throwError(std::exception e);
 	void sendData(const int& to_fd, const sockaddr_in* to_addr) const;
 };
 
