@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "ServerError.hpp"
+#include "HttpHeader.hpp"
 
 Server::Server(int port, int maxConnections)
 {
@@ -85,57 +86,28 @@ void Server::sendData(const int& to_fd, const sockaddr_in* to_addr) const
 	int buffer_size = 4096;
 	char* client_message = new char[buffer_size];
 	int read_size = 0;
+	HttpHeader* httpHeader;
 
 	printf("Client message:\n");
-	std::stringstream http_header; 
-
-	std::string http_method;
-	std::string path;
-	std::string protocol;
 
 	read_size = recv(to_fd, client_message, buffer_size, 0);
 	if (read_size > 0) {
 		printf("%s", client_message);
-
-		http_header << std::string(client_message);
+		
+		httpHeader = new HttpHeader(client_message);
 	} 
 	else {
 		printf("Client hasn't send any message\n");
 		return;
 	}
 
-	std::vector<std::string> lines;
-	std::string segment;
-	while(std::getline(http_header, segment)) {
-		lines.push_back(segment);
-	}
-
-	try {
-		// reading first line
-		for (int i = 0; i < 3; ++i) {
-			http_method += lines[0].at(i);
-		}
-
-		int i = 4;
-		while (lines[0].at(i) != ' ') {
-			path += lines[0].at(i);
-			i += 1;
-		}
-
-		i += 1;
-		for(; i < lines[0].length(); i++) {
-			protocol += lines[0].at(i);
-		}
-
-		std::cout << "HTTP Method: " << http_method << "\n";
-		std::cout << "Path: " << path << "\n";
-		std::cout << "Protocol: " << protocol << "\n\n";
-	} catch (std::exception& e) {
-		printf("Not a HTTP Request\n");
-	}
-
+	std::cout << "HTTP Method: " << httpHeader->methodToStr(httpHeader->getMethod()) << "\n";
+	std::cout << "Path: " << httpHeader->getPath() << "\n";
+	std::cout << "Protocol: " << httpHeader->getVersion() << "\n\n";
+	
 	char hello[] = "Hello from the server";
 	write(to_fd, hello, strlen(hello));
 
+	delete httpHeader;
 	close(to_fd);
 }
