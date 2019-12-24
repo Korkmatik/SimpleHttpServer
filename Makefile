@@ -6,6 +6,7 @@ SRC_DIR = src
 BIN_DIR = bin
 DEBUG_DIR = $(BIN_DIR)/debug
 RELEASE_DIR = $(BIN_DIR)/release
+TEMPLATE_DIR = templates
 
 release:
 	$(COMPILER) $(SRC_DIR)/* -o $(RELEASE_DIR)/$(PROGRAM)
@@ -15,6 +16,8 @@ debug:
 
 init:
 	mkdir $(BIN_DIR) $(DEBUG_DIR) $(RELEASE_DIR)
+	cp -r $(TEMPLATE_DIR) $(DEBUG_DIR)
+	cp -r $(TEMPLATE_DIR) $(RELEASE_DIR)
 
 clean:
 	rm -rf $(BIN_DIR)
