@@ -6,6 +6,8 @@
 
 #include <netinet/in.h>
 
+#include "HttpHeader.hpp"
+
 namespace std {
 	class exception;
 }
@@ -24,6 +26,8 @@ private:
 
     void cleanUp();
 	void sendData(const int& to_fd, const sockaddr_in* to_addr) const;
+
+	void doGet(int to_fd, HttpHeader* httpHeader) const;
 };
 
 

@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 #include "ServerError.hpp"
-#include "HttpHeader.hpp"
+#include "FileLoader.hpp"
 
 Server::Server(int port, int maxConnections)
 {
@@ -105,9 +105,23 @@ void Server::sendData(const int& to_fd, const sockaddr_in* to_addr) const
 	std::cout << "Path: " << httpHeader->getPath() << "\n";
 	std::cout << "Protocol: " << httpHeader->getVersion() << "\n\n";
 	
-	char hello[] = "Hello from the server";
-	write(to_fd, hello, strlen(hello));
+	if (httpHeader->getMethod() == HttpHeader::Method::GET) {
+		doGet(to_fd, httpHeader);
+	}
 
 	delete httpHeader;
 	close(to_fd);
+}
+
+void Server::doGet(int to_fd, HttpHeader* httpHeader) const
+{
+	FileLoader* fileLoader = new FileLoader();
+
+	std::string response = "";
+	//response += HttpHeader::HttpOK();
+
+	response += "Hello from the server";
+	write(to_fd, response.c_str(), response.length());
+
+	delete fileLoader;
 }
